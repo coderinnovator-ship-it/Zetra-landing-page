@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Business Booking</title>
+
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #f4f6f8;
+  padding: 20px;
+}
+h1, h2 {
+  text-align: center;
+}
+.box {
+  max-width: 450px;
+  margin: 20px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 8px;
+}
+input, textarea, button {
+  width: 100%;
+  padding: 10px;
+  margin: 8px 0;
+}
+button {
+  background: #25D366;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+button:hover {
+  opacity: 0.9;
+}
+.hidden { display: none; }
+.booking {
+  background: #f1f1f1;
+  padding: 10px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>🔧 TOLUWANI ELECTRONIC REPAIRS</h1>
+<!-- 👆 CHANGE BUSINESS NAME -->
+
+<div class="box" id="customerPage">
+  <h2>Book a Service</h2>
+
+  <input id="name" placeholder="Your Name" required>
+  <input id="phone" placeholder="Your WhatsApp Number" required>
+
+  <textarea id="details" placeholder="Describe what you need (service details)" required></textarea>
+
+  <button onclick="submitBooking()">Submit Booking</button>
+</div>
+
+<div class="box">
+  <button onclick="openAdmin()">Open Admin Dashboard</button>
+</div>
+
+<div class="box hidden" id="adminPage">
+  <h2>Admin Dashboard</h2>
+  <div id="bookingList"></div>
+</div>
+
+<script>
+/* =========================
+   SETTINGS (EDIT THIS ONLY)
+========================= */
+
+// BUSINESS WHATSAPP NUMBER (NO +)
+const BUSINESS_WHATSAPP = "234806542573"; 
+// 👆 CHANGE THIS FOR EACH CLIENT
+
+/* =========================
+   LOGIC
+========================= */
+
+let bookings = JSON.parse(localStorage.getItem("bookings") || "[]");
+
+function submitBooking() {
+  const name = document.getElementById("name").value.trim();
+  const phone = document.getElementById("phone").value.trim();
+  const details = document.getElementById("details").value.trim();
+
+  if (!name || !phone || !details) {
+    alert("Please fill all fields");
+    return;
+  }
+
+  bookings.push({ name, phone, details });
+  localStorage.setItem("bookings", JSON.stringify(bookings));
+
+  alert("Booking submitted!");
+  document.getElementById("name").value = "";
+  document.getElementById("phone").value = "";
+  document.getElementById("details").value = "";
+}
+
+function openAdmin() {
+  const pass = prompt("Enter admin password");
+  if (pass !== "admin123") {
+    alert("Wrong password");
+    return;
+  }
+  document.getElementById("adminPage").classList.remove("hidden");
+  renderBookings();
+}
+
+function renderBookings() {
+  const list = document.getElementById("bookingList");
+  list.innerHTML = "";
+
+  bookings.forEach(b => {
+    const msg = encodeURIComponent(
+      `Hello ${b.name}, I received your booking:\n${b.details}`
+    );
+
+    list.innerHTML += `
+      <div class="booking">
+        <b>${b.name}</b><br>
+        ${b.phone}<br>
+        ${b.details}<br><br>
+        <a href="https://wa.me/${b.phone}?text=${msg}" target="_blank">
+          Reply on WhatsApp
+        </a>
+      </div>
+    `;
+  });
+}
+</script>
+
+</body>
+</html>
